@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario Kart Tour Shop Data Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: calc(16px + 0.5vw);
+        }
+
+        /* Day Theme */
+        body[data-theme="day"] {
+            --background-color: #f1f1f1;
+            --text-color: #333;
+            --search-results-background: #ffffff;
+            --search-results-text-color: #333;
+            --dark-theme-background: #f1f1f1;
+        }
+
+        /* Night Theme */
+        body[data-theme="night"] {
+            --background-color: #2e2e2e;
+            --text-color: #ecf0f1;
+            --search-results-background: #444444;
+            --search-results-text-color: #ecf0f1;
+            --dark-theme-background: #333333;
+        }
+
+        /* Header for Theme Toggle */
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .created-by {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: calc(12px + 0.5vw);
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        /* Theme Toggle Button Styles */
+        .theme-toggle {
+            font-size: calc(16px + 0.5vw);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .theme-toggle:hover {
+            color: #3498db;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        .search-box-container {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            max-width: 400px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        .filter-container.show {
+            display: flex; /* Show filters when the 'show' class is added */
+        }
+
+        .filter-row {
+            flex: 1 1 45%; /* This will make each filter row take up 45% of the container's width */
+            min-width: 200px; /* Prevents the filters from becoming too narrow */
+            text-align: left; /* Ensures the content is left-aligned */
+        }
+
+        .filter-row label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .filter-row input {
+            margin-left: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* Radio Group for selecting Item or Tour search (horizontal layout) */
+        .radio-group.horizontal {
+            margin-left: 0;
+            display: flex;
+            flex-direction: row; /* Horizontal layout */
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .radio-group.horizontal label {
+            margin-right: 20px;
+        }
+
+        /* Radio Group for the filters (vertical layout) */
+        .radio-group.vertical {
+            margin-left: 0;
+            display: flex;
+            flex-direction: column; /* Vertical layout */
+            align-items: flex-start;
+        }
+
+        .radio-group.vertical label {
+            margin-bottom: 5px; /* Space between each radio button */
+        }
+
+        /* Hide the tour selection by default */
+        #tourSearchContainer {
+            display: none;
+        }
+
+        .menu-item {
+            margin: 5px 0;
+        }
+
+        .dropdown-container {
+            margin-bottom: 10px;
+        }
+
+        /* Container for search results */
+        .search-results-container {
+            border: 2px solid #ddd; /* Border around the results box */
+            padding: 20px; /* Inside padding to give space around the text */
+            margin-top: 20px; /* Space above the results box */
+            max-width: 650px; /* Max width to limit the box size */
+            margin-left: auto; /* Center the box horizontally */
+            margin-right: auto;
+            background-color: var(--search-results-background);
+            color: var(--search-results-text-color);
+            border-radius: 8px; /* Rounded corners for a smoother look */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional subtle shadow for some depth */
+            text-align: left;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .search-results-container h3 {
+            margin-top: 0; /* Remove extra margin at the top of the header */
+        }
+
+        .search-results-container p {
+            margin: 5px 0; /* Add margin to paragraphs for better spacing */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header for Theme Toggle -->
+    <div class="header">
+        <p class="created-by">OfficialJH</p>
+        <button id="themeToggle" class="theme-toggle">🌞</button>
+    </div>
+
+    <div class="container">
+        <h1>Mario Kart Tour Shop Data Viewer</h1>
+
+        <!-- Radio Group to select Item or Tour Search -->
+        <div class="radio-group horizontal">
+            <label><input type="radio" name="searchType" value="item" checked> Search by Item</label>
+            <label><input type="radio" name="searchType" value="tour"> Search by Tour</label>
+        </div>
+
+        <!-- Search Box for Items -->
+        <div class="search-box-container" id="itemSearchContainer">
+            <label for="itemSearch">Search by Item:</label>
+            <input type="text" id="itemSearch" placeholder="Enter item name">
+            <button class="menu-item" onclick="searchByItem()">Search</button>
+        </div>
+
+        <!-- Dropdown for Tours -->
+        <div class="dropdown-container" id="tourSearchContainer">
+            <label for="tourSelect">Select a Tour:</label>
+            <select id="tourSelect">
+                <option value="">--Select a tour--</option>
+            </select>
+            <button class="menu-item" onclick="searchByTour()">Search by Tour</button>
+        </div>
+
+        <!-- Button to toggle filters visibility -->
+        <button id="toggleFiltersButton">Advanced Options</button>
+
+        <!-- Filters Container -->
+        <div class="filter-container" id="filterContainer">
+            <!-- Type Filter -->
+            <div class="filter-row">
+                <span><strong>Type Filter:</strong></span>
+                <div class="radio-group vertical">
+                    <label><input type="radio" name="typeFilter" value="All" checked> All</label>
+                    <label><input type="radio" name="typeFilter" value="Driver"> Driver</label>
+                    <label><input type="radio" name="typeFilter" value="Kart"> Kart</label>
+                    <label><input type="radio" name="typeFilter" value="Glider"> Glider</label>
+                </div>
+            </div>
+
+            <!-- Rate Filter -->
+            <div class="filter-row">
+                <span><strong>Rate Filter:</strong></span>
+                <div class="radio-group vertical">
+                    <label><input type="radio" name="rateFilter" value="All" checked> All</label>
+                    <label><input type="radio" name="rateFilter" value="Spotlight"> Spotlight</label>
+                    <label><input type="radio" name="rateFilter" value="High"> High</label>
+                    <label><input type="radio" name="rateFilter" value="Normal"> Normal</label>
+                    <label><input type="radio" name="rateFilter" value="Low"> Low</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="output" class="search-results-container"></div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to set the initial theme and reset filters
+            function initializePage() {
+                // Set initial theme based on user preference
+                const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                const themeToggleButton = document.getElementById("themeToggle");
+        
+                // Set the theme based on the user's preference
+                if (userPrefersDark) {
+                    document.body.setAttribute("data-theme", "night");
+                    themeToggleButton.textContent = "🌚"; // Change icon to moon
+                } else {
+                    document.body.setAttribute("data-theme", "day");
+                    themeToggleButton.textContent = "🌞"; // Change icon to sun
+                }
+
+                // Reset the radio buttons for search type (Search by Item by default)
+                const itemRadio = document.querySelector('input[name="searchType"][value="item"]');
+                const tourRadio = document.querySelector('input[name="searchType"][value="tour"]');
+
+                if (itemRadio) {
+                    itemRadio.checked = true;
+                }
+
+                // Reset search container visibility based on default selection
+                if (itemRadio.checked) {
+                    document.getElementById("itemSearchContainer").style.display = "block";
+                    document.getElementById("tourSearchContainer").style.display = "none";
+                }
+
+                // Reset filters (Type and Rate filters to "All")
+                document.querySelector('input[name="typeFilter"][value="All"]').checked = true;
+                document.querySelector('input[name="rateFilter"][value="All"]').checked = true;
+                document.getElementById("itemSearch").value = ''; // Clear the search box
+            }
+
+            // Call the initialize function to set up everything on page load
+            initializePage();
+
+            // Event listener for search type changes
+            document.querySelectorAll('input[name="searchType"]').forEach(input => {
+                input.addEventListener("change", function() {
+                    if (this.value === "item") {
+                        document.getElementById("itemSearchContainer").style.display = "block";
+                        document.getElementById("tourSearchContainer").style.display = "none";
+                    } else {
+                        document.getElementById("itemSearchContainer").style.display = "none";
+                        document.getElementById("tourSearchContainer").style.display = "block";
+                    }
+                });
+            });
+
+            // Toggle theme manually
+            document.getElementById("themeToggle").addEventListener("click", function() {
+                const currentTheme = document.body.getAttribute("data-theme");
+
+                if (currentTheme === "day") {
+                    document.body.setAttribute("data-theme", "night");
+                    themeToggleButton.textContent = "🌚";
+                } else {
+                    document.body.setAttribute("data-theme", "day");
+                    themeToggleButton.textContent = "🌞";
+                }
+            });
+        });
+
+        // Toggle filters visibility
+        document.getElementById("toggleFiltersButton").addEventListener("click", function() {
+            const filterContainer = document.getElementById("filterContainer");
+            filterContainer.classList.toggle("show");
+            this.textContent = filterContainer.classList.contains("show") ? "Hide Advanced Options" : "Advanced Options";
+        });
+
+        // Available options
+        const availableTours = [
+            "Battle Tour", "Halloween Tour", "Autumn Tour", "Animal Tour",
+            "Peach vs. Bowser Tour", "Holiday Tour", "New Year's Tour", "Space Tour",
+            "Winter Tour", "Exploration Tour", "Doctor Tour", "Mario Tour", "Ninja Tour",
+            "Yoshi Tour", "Spring Tour", "Bowser Tour", "Mii Tour", "Princess Tour",
+            "Mario vs. Luigi Tour", "Night Tour", "Pipe Tour", "Sunshine Tour",
+            "Vacation Tour", "Summer Tour", "Sundae Tour", "Anniversary Tour"
+        ];
+
+        const availableRates = ["spotlight", "high", "normal", "low"];
+        const availableTypes = ["driver", "kart", "glider"];
+
+        let currentTypeFilter = "All";
+        let currentRateFilter = "All";
+        let itemsDb = {}; // Items database will be loaded here
+
+        // Load items database (simulate loading from JSON file)
+        fetch('items_db.json')
+            .then(response => response.json())
+            .then(data => {
+                itemsDb = data;
+
+                // Populate the tour dropdown with available tours
+                const tourSelect = document.getElementById("tourSelect");
+                availableTours.forEach(tour => {
+                    const option = document.createElement("option");
+                    option.value = tour;
+                    option.textContent = tour;
+                    tourSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading items database:", error);
+            });
+
+        // Fuzzy search function to match search query with item names
+        function fuzzySearch(query, itemName) {
+            const keywords = query.toLowerCase().split(/\s+/); // Split the query into words and make them lowercase
+            const itemNameLower = itemName.toLowerCase();
+            
+            // Check if all keywords are found in the item name (in any order)
+            return keywords.every(keyword => itemNameLower.includes(keyword));
+        }
+        
+        // Handle item search
+        function searchByItem() {
+            let searchQuery = document.getElementById("itemSearch").value.toLowerCase();
+            let matchingItems = [];
+        
+            for (let itemId in itemsDb) {
+                let itemData = itemsDb[itemId];
+                
+                // Use fuzzy search instead of exact match
+                if (fuzzySearch(searchQuery, itemId) &&
+                    (currentTypeFilter === "All" || itemData.type.toLowerCase() === currentTypeFilter.toLowerCase()) &&
+                    (currentRateFilter === "All" || Object.values(itemData.rates).includes(currentRateFilter.toLowerCase()))) {
+                    matchingItems.push({ itemId, itemData });
+                }
+            }
+
+            if (!matchingItems.length) {
+                document.getElementById("output").innerHTML = "<p>No items found matching the search criteria.</p>";
+                return;
+            }
+        
+            // Sort matching items by type when the filter is "All"
+            if (currentTypeFilter === "All") {
+                const typeOrder = ["driver", "kart", "glider"]; // Define custom order
+        
+                matchingItems.sort((a, b) => {
+                    const typeA = a.itemData.type.toLowerCase();
+                    const typeB = b.itemData.type.toLowerCase();
+        
+                    return typeOrder.indexOf(typeA) - typeOrder.indexOf(typeB); // Sort based on predefined order
+                });
+            }
+        
+            let result = "<h3>Matching Items:</h3>";
+        
+            matchingItems.forEach((item, index) => {
+                result += `<p><strong>${item.itemId}</strong> - ${item.itemData.type.charAt(0).toUpperCase() + item.itemData.type.slice(1)}</p>`;
+                for (let tour in item.itemData.rates) {
+                    if (currentRateFilter === "All" || item.itemData.rates[tour].toLowerCase() === currentRateFilter.toLowerCase()) {
+                        result += `<p>${tour}: ${item.itemData.rates[tour].charAt(0).toUpperCase() + item.itemData.rates[tour].slice(1)}</p>`;
+                    }
+                }
+        
+                // Only add <hr> if it's not the last item in the list
+                if (index < matchingItems.length - 1) {
+                    result += "<hr>";
+                }
+            });
+        
+            document.getElementById("output").innerHTML = result;
+        }
+        
+        document.getElementById("itemSearch").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                searchByItem(); // Trigger the search
+            }
+        });
+        
+        // Handle tour search
+        function searchByTour() {
+            const tour = document.getElementById("tourSelect").value;
+            if (!tour) {
+                document.getElementById("output").innerHTML = "<p>Please select a tour.</p>";
+                return;
+            }
+        
+            let sortedItems = {};
+        
+            for (let itemId in itemsDb) {
+                let itemData = itemsDb[itemId];
+                if (itemData.rates[tour]) {
+                    let rate = itemData.rates[tour].toLowerCase();
+                    if (!sortedItems[rate]) sortedItems[rate] = { driver: [], kart: [], glider: [] };
+                    sortedItems[rate][itemData.type].push(itemId);
+                }
+            }
+        
+            let result = `<h3>Spotlight Shop for ${tour}</h3>`;
+            availableRates.forEach(rate => {
+                rate = rate.toLowerCase();
+                if (sortedItems[rate]) {
+                    availableTypes.forEach((itemType, index) => {
+                        if (sortedItems[rate][itemType].length > 0) {
+                            result += `<p>${rate.charAt(0).toUpperCase() + rate.slice(1)} Rate - ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}s:</p>`;
+                            sortedItems[rate][itemType].forEach(itemId => {
+                                result += `<p>${itemId}</p>`;
+                            });
+                            // Only add <hr> if it's not the last item in the list
+                            if (index < availableTypes.length - 1) {
+                                result += "<hr>";
+                            }
+                        }
+                    });
+                }
+            });
+        
+            document.getElementById("output").innerHTML = result;
+        }
+        
+        // Handle filter change
+        document.querySelectorAll('input[name="typeFilter"]').forEach(input => {
+            input.addEventListener("change", function () {
+                currentTypeFilter = this.value;
+            });
+        });
+
+        document.querySelectorAll('input[name="rateFilter"]').forEach(input => {
+            input.addEventListener("change", function () {
+                currentRateFilter = this.value;
+            });
+        });
+    </script>
+
+</body>
+</html>
+
