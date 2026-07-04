@@ -1,0 +1,288 @@
+/* ===== ROOT & THEME ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --text: #fff;
+    --bg: #222;
+    --search-bg: #333;
+    --accent: #ff5555;
+    --hover: #ffaaaa;
+}
+
+
+/* ===== BASE ELEMENTS ===== */
+body {
+    background-image: url("images/MKT_bg_pattern_black1.png");
+    background-repeat: repeat;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover { color: var(--hover) }
+
+
+/* ===== INPUTS & SELECTS ===== */
+input,
+select {
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+
+/* ===== HEADER ===== */
+header {
+    display: flex;
+    justify-content: right;
+    width: 100%;
+}
+
+header > button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+header > button img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+
+/* ===== NAVIGATION ===== */
+.nav-button-group {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9em;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.nav-btn img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+
+/* ===== CONTAINERS ===== */
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 20px;
+}
+
+.search-box-container {
+    text-align: center;
+    margin: 8px;
+}
+
+#tourSearchContainer {
+    display: none;
+}
+
+.dropdown-container {
+    margin-top: 8px;
+}
+
+.search-results-container {
+    padding: 16px;
+    margin-top: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--search-bg);
+    color: var(--text);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.search-results-container h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+}
+
+.search-results-container p {
+    margin: 8px 0;
+}
+
+
+/* ===== FILTERS ===== */
+details {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 0 auto;
+    align-items: center;
+}
+
+details > summary {
+    margin: 8px 0 0;
+    cursor: pointer;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-around;
+    background: var(--search-bg);
+    padding: 12px;
+    gap: 32px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.filter-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-column span {
+    text-decoration: underline;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+
+/* ===== TABLES ===== */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 15px;
+}
+
+.daily-selects-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text);
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+.daily-selects-table th, 
+.daily-selects-table td {
+    border: 1px solid #555;
+    padding: 8px;
+}
+
+.daily-selects-table .rarity-header th {
+    font-size: 1.2em;
+    padding: 12px;
+    background-color: #111;
+    letter-spacing: 1px;
+}
+
+.daily-selects-table .type-header th {
+    font-weight: bold;
+    background-color: var(--bg);
+}
+
+.daily-selects-table .item-lists td {
+    vertical-align: top;
+    padding: 8px;
+    font-size: clamp(0.5em, 3.2cqw, 1em);
+}
+
+.daily-selects-table .item-lists td br {
+    display: block;
+    content: "";
+    margin-bottom: 8px;
+}
+
+/* Dynamic Rate Header Colors */
+.daily-selects-table .rarity-header.bg-normal th {
+    background-color: #DDD;
+    color: #000;
+}
+
+.daily-selects-table .rarity-header.bg-super th {
+    background-color: #EDD400;
+    color: #000;
+}
+
+.daily-selects-table .rarity-header.bg-high th {
+    background-color: #FFBBEE;
+    color: #000;
+}
+
+
+/* ===== DIALOG/MODAL =====*/
+dialog {
+    width: min(80vw, 320px);
+    max-height: 90vh;
+    background: var(--bg);
+    color: inherit;
+    border: none;
+    border-radius: 16px;
+    padding: 12px;
+    margin: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+dialog::backdrop {
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    word-break: break-word;
+    text-align: left;
+}
+
+dialog h3 {
+    margin: 0;
+    padding-bottom: 4px;
+    text-align: center;
+    border-bottom: 1px solid #555;
+}
+
+dialog button {
+    background: var(--search-bg);
+    border: none;
+    color: var(--text);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    cursor: pointer;
+}

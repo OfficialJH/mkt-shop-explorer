@@ -8042,5 +8042,17 @@
         "rates": {
             "Anniversary Tour": "low"
         }
+    },
+    "Luigi (Mechanic)": {
+        "type": "driver",
+        "rates": {
+            "Sunshine Tour": "spotlight"
+        }
+    },
+    "Tiny Titan": {
+        "type": "kart",
+        "rates": {
+            "Sunshine Tour": "spotlight"
+        }
     }
 }
