@@ -11,6 +11,10 @@
 
 <body>
     <header>
+        <button title="Notice" onclick="noticeModal.showModal()">
+            <img src="images/MKT_Icon_News.png" alt="Notice">
+        </button>
+
         <button title="About" onclick="aboutModal.showModal()">
             <img src="images/MKT_Icon_Maintenance.png" alt="About">
         </button>
@@ -124,6 +128,20 @@
             </span>
 
             <button onclick="aboutModal.close()" autofocus>Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="noticeModal">
+        <div class="modal-content">
+            <h3>End-of-Service Notice</h3>
+
+            <span>
+                Nintendo announced on July 8, 2026 that service for Mario Kart Tour will end on September 30th (when the Anniversary Tour ends).
+                While updates to this tool may or may not be made in the future, it will continue to be available for preservation purposes
+                (and if an official/unofficial offline version of the game ends up being created).
+            </span>
+
+            <button onclick="noticeModal.close()" autofocus>Close</button>
         </div>
     </dialog>
 
